@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Struggle - Life Dashboard</title>
+
+<style>
+body{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  margin:0;
+  background:#0f172a;
+  color:white;
+}
+
+header{
+  padding:20px;
+  text-align:center;
+  font-size:28px;
+  font-weight:bold;
+  background:#1e293b;
+}
+
+nav{
+  display:flex;
+  justify-content:space-around;
+  background:#111827;
+  padding:10px;
+}
+
+nav button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:14px;
+}
+
+.section{
+  display:none;
+  padding:20px;
+}
+
+.active{
+  display:block;
+}
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin-top:10px;
+}
+
+button.action{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#3b82f6;
+  color:white;
+}
+
+.small-btn{
+  margin-top:10px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  background:#ef4444;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<header>Struggle - Life Dashboard</header>
+
+<nav>
+  <button onclick="showSection('dashboard')">Home</button>
+  <button onclick="showSection('routine')">Routine</button>
+  <button onclick="showSection('workout')">Workout</button>
+  <button onclick="showSection('language')">Language</button>
+  <button onclick="showSection('quran')">Quran</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section active">
+  <div class="card">
+    <h3>Welcome Hamza 🔥</h3>
+    <p>Your life system is growing.</p>
+  </div>
+</div>
+
+<!-- ROUTINE -->
+<div id="routine" class="section">
+  <div class="card">
+    <h3>Add Routine</h3>
+    <input id="routineInput" placeholder="Enter new routine">
+    <button class="action" onclick="addRoutine()">Add</button>
+    <div id="routineList"></div>
+  </div>
+</div>
+
+<!-- WORKOUT -->
+<div id="workout" class="section">
+  <div class="card">
+    <h3>Workout Tracker</h3>
+    <input id="workoutInput" placeholder="Add exercise">
+    <button class="action" onclick="addWorkout()">Add</button>
+    <div id="workoutList"></div>
+  </div>
+</div>
+
+<!-- LANGUAGE -->
+<div id="language" class="section">
+  <div class="card">
+    <h3>Language Learning</h3>
+    <input id="languageInput" placeholder="Add language">
+    <button class="action" onclick="addLanguage()">Add</button>
+    <div id="languageList"></div>
+  </div>
+</div>
+
+<!-- QURAN -->
+<div id="quran" class="section">
+  <div class="card">
+    <h3>Prayer Tracker</h3>
+    <div id="prayerList"></div>
+  </div>
+</div>
+
+<script>
+let routines = JSON.parse(localStorage.getItem("routines")) || [];
+let workouts = JSON.parse(localStorage.getItem("workouts")) || [];
+let languages = JSON.parse(localStorage.getItem("languages")) || [];
+let prayers = ["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+let prayerStatus = JSON.parse(localStorage.getItem("prayerStatus")) || {};
+
+function save(){
+  localStorage.setItem("routines",JSON.stringify(routines));
+  localStorage.setItem("workouts",JSON.stringify(workouts));
+  localStorage.setItem("languages",JSON.stringify(languages));
+  localStorage.setItem("prayerStatus",JSON.stringify(prayerStatus));
+}
+
+function showSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function renderList(list,data,deleteFunc){
+  list.innerHTML="";
+  data.forEach((item,index)=>{
+    list.innerHTML+=`
+      <div class="card">
+        ${item}
+        <br>
+        <button class="small-btn" onclick="${deleteFunc}(${index})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+function addRoutine(){
+  let input=document.getElementById("routineInput");
+  if(input.value){
+    routines.push(input.value);
+    input.value="";
+    save();
+    renderList(document.getElementById("routineList"),routines,"deleteRoutine");
+  }
+}
+
+function deleteRoutine(i){
+  routines.splice(i,1);
+  save();
+  renderList(document.getElementById("routineList"),routines,"deleteRoutine");
+}
+
+function addWorkout(){
+  let input=document.getElementById("workoutInput");
+  if(input.value){
+    workouts.push(input.value);
+    input.value="";
+    save();
+    renderList(document.getElementById("workoutList"),workouts,"deleteWorkout");
+  }
+}
+
+function deleteWorkout(i){
+  workouts.splice(i,1);
+  save();
+  renderList(document.getElementById("workoutList"),workouts,"deleteWorkout");
+}
+
+function addLanguage(){
+  let input=document.getElementById("languageInput");
+  if(input.value){
+    languages.push(input.value);
+    input.value="";
+    save();
+    renderList(document.getElementById("languageList"),languages,"deleteLanguage");
+  }
+}
+
+function deleteLanguage(i){
+  languages.splice(i,1);
+  save();
+  renderList(document.getElementById("languageList"),languages,"deleteLanguage");
+}
+
+function renderPrayers(){
+  let container=document.getElementById("prayerList");
+  container.innerHTML="";
+  prayers.forEach(p=>{
+    let checked = prayerStatus[p] ? "checked" : "";
+    container.innerHTML+=`
+      <div>
+        <input type="checkbox" onchange="togglePrayer('${p}')" ${checked}> ${p}
+      </div>
+    `;
+  });
+}
+
+function togglePrayer(p){
+  prayerStatus[p]=!prayerStatus[p];
+  save();
+}
+
+renderList(document.getElementById("routineList"),routines,"deleteRoutine");
+renderList(document.getElementById("workoutList"),workouts,"deleteWorkout");
+renderList(document.getElementById("languageList"),languages,"deleteLanguage");
+renderPrayers();
+</script>
+
+</body>
+</html>
