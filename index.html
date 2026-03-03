@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Struggle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+.dark {
+  background: #111;
+  color: white;
+}
+
+.light {
+  background: white;
+  color: black;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+input {
+  padding: 8px;
+  margin: 5px 0;
+  width: 100%;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+</style>
+</head>
+
+<body class="dark">
+
+<h1>Struggle</h1>
+
+<button onclick="toggleMode()">Toggle Dark / Light Mode</button>
+
+<div class="section">
+<h2>Add Schedule</h2>
+<input type="text" id="scheduleInput" placeholder="Enter schedule">
+<button onclick="addSchedule()">Add</button>
+<div id="scheduleList"></div>
+</div>
+
+<div class="section">
+<h2>Add Language</h2>
+<input type="text" id="languageInput" placeholder="Enter language">
+<button onclick="addLanguage()">Add</button>
+<div id="languageList"></div>
+</div>
+
+<script>
+let schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+let languages = JSON.parse(localStorage.getItem("languages")) || [];
+
+function saveData() {
+  localStorage.setItem("schedules", JSON.stringify(schedules));
+  localStorage.setItem("languages", JSON.stringify(languages));
+}
+
+function renderSchedules() {
+  let list = document.getElementById("scheduleList");
+  list.innerHTML = "";
+  schedules.forEach((item, index) => {
+    list.innerHTML += `
+      <div class="item">
+        ${item}
+        <button onclick="deleteSchedule(${index})">X</button>
+      </div>
+    `;
+  });
+}
+
+function renderLanguages() {
+  let list = document.getElementById("languageList");
+  list.innerHTML = "";
+  languages.forEach((item, index) => {
+    list.innerHTML += `
+      <div class="item">
+        ${item}
+        <button onclick="deleteLanguage(${index})">X</button>
+      </div>
+    `;
+  });
+}
+
+function addSchedule() {
+  let input = document.getElementById("scheduleInput");
+  if(input.value.trim() !== "") {
+    schedules.push(input.value);
+    input.value = "";
+    saveData();
+    renderSchedules();
+  }
+}
+
+function addLanguage() {
+  let input = document.getElementById("languageInput");
+  if(input.value.trim() !== "") {
+    languages.push(input.value);
+    input.value = "";
+    saveData();
+    renderLanguages();
+  }
+}
+
+function deleteSchedule(index) {
+  schedules.splice(index, 1);
+  saveData();
+  renderSchedules();
+}
+
+function deleteLanguage(index) {
+  languages.splice(index, 1);
+  saveData();
+  renderLanguages();
+}
+
+function toggleMode() {
+  let body = document.body;
+  if(body.classList.contains("dark")) {
+    body.classList.remove("dark");
+    body.classList.add("light");
+  } else {
+    body.classList.remove("light");
+    body.classList.add("dark");
+  }
+}
+
+renderSchedules();
+renderLanguages();
+</script>
+
+</body>
+</html>
