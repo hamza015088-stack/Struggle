@@ -5,42 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
-  font-family: Arial;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   padding: 20px;
   transition: 0.3s;
 }
 
 .dark {
-  background: #111;
+  background: #0f172a;
   color: white;
 }
 
 .light {
-  background: white;
+  background: #f1f5f9;
   color: black;
 }
 
+h1 {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
 button {
-  padding: 8px 12px;
-  margin: 5px 0;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.danger {
+  background: #ef4444;
+  color: white;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 16px;
+  margin-top: 15px;
 }
 
 input {
-  padding: 8px;
-  margin: 5px 0;
+  padding: 10px;
   width: 100%;
+  border-radius: 12px;
+  border: none;
+  margin-top: 10px;
 }
 
-.section {
-  margin-bottom: 30px;
+.progress {
+  height: 8px;
+  background: #334155;
+  border-radius: 10px;
+  margin-top: 10px;
 }
 
-.item {
-  display: flex;
-  justify-content: space-between;
-  margin: 5px 0;
+.progress-bar {
+  height: 8px;
+  background: #22c55e;
+  border-radius: 10px;
+  width: 0%;
 }
 </style>
 </head>
@@ -49,19 +80,19 @@ input {
 
 <h1>Struggle</h1>
 
-<button onclick="toggleMode()">Toggle Dark / Light Mode</button>
+<button onclick="toggleMode()" class="primary">Toggle Dark / Light Mode</button>
 
-<div class="section">
+<div class="card">
 <h2>Add Schedule</h2>
 <input type="text" id="scheduleInput" placeholder="Enter schedule">
-<button onclick="addSchedule()">Add</button>
+<button onclick="addSchedule()" class="primary">Add</button>
 <div id="scheduleList"></div>
 </div>
 
-<div class="section">
+<div class="card">
 <h2>Add Language</h2>
 <input type="text" id="languageInput" placeholder="Enter language">
-<button onclick="addLanguage()">Add</button>
+<button onclick="addLanguage()" class="primary">Add</button>
 <div id="languageList"></div>
 </div>
 
@@ -79,9 +110,9 @@ function renderSchedules() {
   list.innerHTML = "";
   schedules.forEach((item, index) => {
     list.innerHTML += `
-      <div class="item">
+      <div class="card">
         ${item}
-        <button onclick="deleteSchedule(${index})">X</button>
+        <button class="danger" onclick="deleteSchedule(${index})">Delete</button>
       </div>
     `;
   });
@@ -92,9 +123,12 @@ function renderLanguages() {
   list.innerHTML = "";
   languages.forEach((item, index) => {
     list.innerHTML += `
-      <div class="item">
-        ${item}
-        <button onclick="deleteLanguage(${index})">X</button>
+      <div class="card">
+        <strong>${item}</strong>
+        <div class="progress">
+          <div class="progress-bar" style="width: ${Math.floor(Math.random()*100)}%"></div>
+        </div>
+        <button class="danger" onclick="deleteLanguage(${index})">Delete</button>
       </div>
     `;
   });
@@ -134,13 +168,8 @@ function deleteLanguage(index) {
 
 function toggleMode() {
   let body = document.body;
-  if(body.classList.contains("dark")) {
-    body.classList.remove("dark");
-    body.classList.add("light");
-  } else {
-    body.classList.remove("light");
-    body.classList.add("dark");
-  }
+  body.classList.toggle("dark");
+  body.classList.toggle("light");
 }
 
 renderSchedules();
